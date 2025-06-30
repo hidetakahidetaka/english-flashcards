@@ -1,6 +1,5 @@
-
 import React, { useState, useCallback } from 'react';
-import { Screen, type Player, type VocabularyItem } from './types';
+import { type Screen, type Player, type VocabularyItem } from './types';
 import { VOCABULARY, MAX_QUESTIONS } from './constants';
 import PlayerSelectionScreen from './components/PlayerSelectionScreen';
 import NameInputScreen from './components/NameInputScreen';
@@ -9,7 +8,7 @@ import ResultScreen from './components/ResultScreen';
 import VocabularyListScreen from './components/VocabularyListScreen';
 
 const App: React.FC = () => {
-    const [screen, setScreen] = useState<Screen>(Screen.PlayerSelection);
+    const [screen, setScreen] = useState<Screen>('PlayerSelection');
     const [playerCount, setPlayerCount] = useState<number>(0);
     const [players, setPlayers] = useState<Player[]>([]);
     const [shuffledVocabulary, setShuffledVocabulary] = useState<VocabularyItem[]>([]);
@@ -17,11 +16,11 @@ const App: React.FC = () => {
 
     const handlePlayerCountSelect = useCallback((count: number) => {
         setPlayerCount(count);
-        setScreen(Screen.NameInput);
+        setScreen('NameInput');
     }, []);
 
     const handleViewVocabulary = useCallback(() => {
-        setScreen(Screen.VocabularyList);
+        setScreen('VocabularyList');
     }, []);
 
     const handleStartGame = useCallback((names: string[]) => {
@@ -31,7 +30,7 @@ const App: React.FC = () => {
         const shuffled = [...VOCABULARY].sort(() => Math.random() - 0.5).slice(0, MAX_QUESTIONS);
         setShuffledVocabulary(shuffled);
         setCurrentQuestionIndex(0);
-        setScreen(Screen.Game);
+        setScreen('Game');
     }, []);
 
     const handleScoreUpdate = useCallback((playerIndex: number, isCorrect: boolean) => {
@@ -50,30 +49,30 @@ const App: React.FC = () => {
         if (currentQuestionIndex < MAX_QUESTIONS - 1) {
             setCurrentQuestionIndex(prevIndex => prevIndex + 1);
         } else {
-            setScreen(Screen.Result);
+            setScreen('Result');
         }
     }, [currentQuestionIndex]);
 
     const handlePlayAgain = useCallback(() => {
-        setScreen(Screen.PlayerSelection);
+        setScreen('PlayerSelection');
         setPlayers([]);
         setPlayerCount(0);
     }, []);
 
     const handleBackToTitle = useCallback(() => {
-        setScreen(Screen.PlayerSelection);
+        setScreen('PlayerSelection');
     }, []);
 
     const renderScreen = () => {
         switch (screen) {
-            case Screen.PlayerSelection:
+            case 'PlayerSelection':
                 return (
                     <PlayerSelectionScreen
                         onSelectPlayers={handlePlayerCountSelect}
                         onViewVocabulary={handleViewVocabulary}
                     />
                 );
-            case Screen.NameInput:
+            case 'NameInput':
                 return (
                     <NameInputScreen
                         playerCount={playerCount}
@@ -81,7 +80,7 @@ const App: React.FC = () => {
                         onBack={handleBackToTitle}
                     />
                 );
-            case Screen.Game:
+            case 'Game':
                 return (
                     <GameScreen
                         players={players}
@@ -92,9 +91,9 @@ const App: React.FC = () => {
                         onQuestionAnswered={handleQuestionAnswered}
                     />
                 );
-            case Screen.Result:
+            case 'Result':
                 return <ResultScreen players={players} onPlayAgain={handlePlayAgain} />;
-            case Screen.VocabularyList:
+            case 'VocabularyList':
                 return <VocabularyListScreen vocabulary={VOCABULARY} onBack={handleBackToTitle} />;
             default:
                 return <PlayerSelectionScreen onSelectPlayers={handlePlayerCountSelect} onViewVocabulary={handleViewVocabulary} />;

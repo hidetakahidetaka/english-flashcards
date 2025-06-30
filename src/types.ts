@@ -1,11 +1,10 @@
-
-export const enum Screen {
-  PlayerSelection,
-  NameInput,
-  Game,
-  Result,
-  VocabularyList,
-}
+// Using a string union type instead of enum to avoid build errors with Vite/Vercel.
+export type Screen =
+  | 'PlayerSelection'
+  | 'NameInput'
+  | 'Game'
+  | 'Result'
+  | 'VocabularyList';
 
 export interface VocabularyItem {
   english: string;
