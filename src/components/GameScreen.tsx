@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect, useCallback } from 'react';
 import type { Player, VocabularyItem } from '../types';
 
@@ -53,8 +52,15 @@ const GameScreen: React.FC<GameScreenProps> = ({ players, question, questionNumb
         }
     }, [question, voices]);
 
-    const handleScore = (playerIndex: number, isCorrect: boolean) => {
+    const handleScore = (event: React.MouseEvent<HTMLButtonElement>, playerIndex: number, isCorrect: boolean) => {
         if (playersAnswered[playerIndex]) return;
+
+        const button = event.currentTarget;
+        button.classList.add('btn-pressed-feedback');
+        setTimeout(() => {
+            button.classList.remove('btn-pressed-feedback');
+        }, 200);
+
         onScoreUpdate(playerIndex, isCorrect);
         const newPlayersAnswered = [...playersAnswered];
         newPlayersAnswered[playerIndex] = true;
@@ -78,19 +84,19 @@ const GameScreen: React.FC<GameScreenProps> = ({ players, question, questionNumb
             <button
                 onClick={() => setIsAnswerVisible(true)}
                 disabled={isAnswerVisible || allAnswered}
-                className={`${btnBase} text-5xl font-black py-5 bg-gradient-to-br from-blue-400 to-blue-600 text-white focus:ring-blue-500 w-full mb-4`}
+                className={`${btnBase} btn-base text-5xl font-black py-5 bg-gradient-to-br from-blue-400 to-blue-600 text-white focus:ring-blue-500 w-full mb-4`}
             >
                 答え
             </button>
             
-            <p id="answer-display" className={`text-3xl font-black mb-6 h-10 ${isAnswerVisible ? 'bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent' : ''}`}>
+            <p id="answer-display" className={`text-3xl font-black mb-6 h-10 answer-text ${isAnswerVisible ? 'bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent' : ''}`}>
                 {isAnswerVisible ? question.japanese : ''}
             </p>
 
             <button
                 onClick={playAudioHint}
                 disabled={allAnswered}
-                className={`${btnBase} text-5xl font-black py-5 bg-gradient-to-br from-purple-400 to-purple-600 text-white focus:ring-purple-500 w-full mb-6`}
+                className={`${btnBase} btn-base text-5xl font-black py-5 bg-gradient-to-br from-purple-400 to-purple-600 text-white focus:ring-purple-500 w-full mb-6`}
             >
                 ヒント (発音)
             </button>
@@ -101,16 +107,16 @@ const GameScreen: React.FC<GameScreenProps> = ({ players, question, questionNumb
                         <p className="text-xl font-semibold text-gray-800 mb-3">{player.name}さんの正誤</p>
                         <div className="flex justify-around space-x-2">
                             <button
-                                onClick={() => handleScore(index, true)}
+                                onClick={(e) => handleScore(e, index, true)}
                                 disabled={playersAnswered[index] || allAnswered}
-                                className={`${btnBase} flex-1 text-xl bg-gradient-to-br from-pink-400 to-pink-600 text-white focus:ring-pink-500`}
+                                className={`${btnBase} btn-base flex-1 text-xl bg-gradient-to-br from-pink-400 to-pink-600 text-white focus:ring-pink-500`}
                             >
                                 ○ 正解
                             </button>
                             <button
-                                onClick={() => handleScore(index, false)}
+                                onClick={(e) => handleScore(e, index, false)}
                                 disabled={playersAnswered[index] || allAnswered}
-                                className={`${btnBase} flex-1 text-xl bg-gradient-to-br from-orange-400 to-orange-600 text-white focus:ring-orange-500`}
+                                className={`${btnBase} btn-base flex-1 text-xl bg-gradient-to-br from-orange-400 to-orange-600 text-white focus:ring-orange-500`}
                             >
                                 × 不正解
                             </button>

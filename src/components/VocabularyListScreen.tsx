@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { VocabularyItem } from '../types';
 
@@ -13,7 +12,7 @@ const VocabularyListScreen: React.FC<VocabularyListScreenProps> = ({ vocabulary,
 
     return (
         <div className="flex flex-col items-center justify-center text-center w-full p-4">
-            <h1 className={`${titleClasses} mb-8`}>単語リスト</h1>
+            <h1 className={`${titleClasses} app-title mb-8`}>単語リスト</h1>
             <div className="w-full overflow-y-auto max-h-96 pr-2">
                 {vocabulary.map((item, index) => (
                     <div key={index} className="flex justify-between items-center w-full py-2 px-4 mb-2 bg-gray-50 rounded-lg shadow-sm border border-gray-200 text-left">
@@ -23,7 +22,7 @@ const VocabularyListScreen: React.FC<VocabularyListScreenProps> = ({ vocabulary,
                     </div>
                 ))}
             </div>
-            <button onClick={onBack} className={`${btnClasses} w-full mt-8`}>
+            <button onClick={onBack} className={`${btnClasses} btn-base w-full mt-8`}>
                 タイトルに戻る
             </button>
         </div>

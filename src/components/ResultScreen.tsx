@@ -1,4 +1,3 @@
-
 import React from 'react';
 import type { Player } from '../types';
 
@@ -13,7 +12,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ players, onPlayAgain }) => 
 
     return (
         <div className="flex flex-col items-center justify-center text-center w-full p-4">
-            <h1 className={`${titleClasses} mb-8`}>結果発表！</h1>
+            <h1 className={`${titleClasses} app-title mb-8`}>結果発表！</h1>
             <div className="flex flex-col space-y-4 text-2xl mb-8 w-full">
                 {players.map((player, index) => (
                     <div key={index} className="p-4 bg-blue-50 rounded-lg border border-blue-200 shadow-sm">
@@ -26,7 +25,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ players, onPlayAgain }) => 
                     </div>
                 ))}
             </div>
-            <button onClick={onPlayAgain} className={`${btnClasses} w-full`}>
+            <button onClick={onPlayAgain} className={`${btnClasses} btn-base w-full`}>
                 もう一度遊ぶ
             </button>
         </div>

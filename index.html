@@ -1,13 +1,56 @@
-<!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/vite.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vite + React + TS</title>
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>英語フラッシュカードアプリ</title>
+  
+  <!-- Tailwind CSS CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Custom Styles -->
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background: linear-gradient(135deg, #e0f2fe, #bbdefb, #90caf9);
+    }
+
+    /* Custom styles to restore original design */
+    .app-title {
+        text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.15);
+    }
+
+    .answer-text {
+        text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+    }
+
+    .btn-base {
+        text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+    }
+
+    .btn-pressed-feedback {
+        transform: scale(0.95) !important;
+        box-shadow: inset 0 2px 4px rgba(0,0,0,0.3) !important;
+    }
+  </style>
+<script type="importmap">
+{
+  "imports": {
+    "react": "https://esm.sh/react@^19.1.0",
+    "react-dom/": "https://esm.sh/react-dom@^19.1.0/",
+    "react/": "https://esm.sh/react@^19.1.0/"
+  }
+}
+</script>
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+  <div id="root"></div>
+  <!-- Vite App Entry Point -->
+  <script type="module" src="/src/index.tsx"></script>
+</body>
 </html>

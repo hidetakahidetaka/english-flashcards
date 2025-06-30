@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 
 interface NameInputScreenProps {
@@ -54,7 +53,7 @@ const NameInputScreen: React.FC<NameInputScreenProps> = ({ playerCount, onStartG
                         className={inputClasses}
                     />
                 )}
-                <button onClick={handleStart} className={`${btnClasses} w-full mt-6`}>
+                <button onClick={handleStart} className={`${btnClasses} btn-base w-full mt-6`}>
                     ゲームスタート！
                 </button>
                  <button onClick={onBack} className="text-gray-500 hover:text-gray-700 mt-4">

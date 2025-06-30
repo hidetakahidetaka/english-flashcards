@@ -1,4 +1,3 @@
-
 import React from 'react';
 
 interface PlayerSelectionScreenProps {
@@ -14,17 +13,17 @@ const PlayerSelectionScreen: React.FC<PlayerSelectionScreenProps> = ({ onSelectP
     
     return (
         <div className="flex flex-col items-center justify-center text-center w-full">
-            <h1 className={`${titleClasses} mb-4`}>小学三〜四年生用</h1>
-            <h1 className={`${titleClasses} mb-8`}>フラッシュカードアプリ</h1>
+            <h1 className={`${titleClasses} app-title mb-4`}>小学三〜四年生用</h1>
+            <h1 className={`${titleClasses} app-title mb-8`}>フラッシュカードアプリ</h1>
             <h2 className="text-3xl font-bold text-gray-800 mb-8">何人で遊びますか？</h2>
             <div className="flex flex-col space-y-6 w-full">
-                <button onClick={() => onSelectPlayers(1)} className={`${btnBaseClasses} ${btnPrimaryClasses} w-full`}>
+                <button onClick={() => onSelectPlayers(1)} className={`${btnBaseClasses} ${btnPrimaryClasses} btn-base w-full`}>
                     1人で遊ぶ
                 </button>
-                <button onClick={() => onSelectPlayers(2)} className={`${btnBaseClasses} ${btnPrimaryClasses} w-full`}>
+                <button onClick={() => onSelectPlayers(2)} className={`${btnBaseClasses} ${btnPrimaryClasses} btn-base w-full`}>
                     2人で遊ぶ
                 </button>
-                <button onClick={onViewVocabulary} className={`${btnBaseClasses} ${btnSecondaryClasses} w-full`}>
+                <button onClick={onViewVocabulary} className={`${btnBaseClasses} ${btnSecondaryClasses} btn-base w-full`}>
                     単語リストを見る
                 </button>
             </div>
