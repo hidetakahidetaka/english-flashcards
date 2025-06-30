@@ -1,6 +1,6 @@
 
 import React, { useState, useCallback } from 'react';
-import { Screen, Player, VocabularyItem } from './types';
+import { Screen, type Player, type VocabularyItem } from './types';
 import { VOCABULARY, MAX_QUESTIONS } from './constants';
 import PlayerSelectionScreen from './components/PlayerSelectionScreen';
 import NameInputScreen from './components/NameInputScreen';

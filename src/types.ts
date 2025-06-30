@@ -1,5 +1,5 @@
 
-export enum Screen {
+export const enum Screen {
   PlayerSelection,
   NameInput,
   Game,
