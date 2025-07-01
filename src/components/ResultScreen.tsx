@@ -1,12 +1,14 @@
+
 import React from 'react';
 import type { Player } from '../types';
 
 interface ResultScreenProps {
     players: Player[];
     onPlayAgain: () => void;
+    onBackToTitle: () => void;
 }
 
-const ResultScreen: React.FC<ResultScreenProps> = ({ players, onPlayAgain }) => {
+const ResultScreen: React.FC<ResultScreenProps> = ({ players, onPlayAgain, onBackToTitle }) => {
     const titleClasses = "text-4xl sm:text-5xl font-extrabold text-blue-700 drop-shadow-md";
     const btnClasses = "font-extrabold py-4 px-8 rounded-2xl shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-offset-2 bg-gradient-to-br from-blue-400 to-blue-600 text-white focus:ring-blue-500";
 
@@ -25,9 +27,14 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ players, onPlayAgain }) => 
                     </div>
                 ))}
             </div>
-            <button onClick={onPlayAgain} className={`${btnClasses} btn-base w-full`}>
-                もう一度遊ぶ
-            </button>
+            <div className="flex flex-col space-y-4 w-full">
+                <button onClick={onPlayAgain} className={`${btnClasses} btn-base w-full`}>
+                    もう一度遊ぶ
+                </button>
+                <button onClick={onBackToTitle} className="text-gray-500 hover:text-gray-700 mt-4 font-semibold">
+                    タイトルに戻る
+                </button>
+            </div>
         </div>
     );
 };

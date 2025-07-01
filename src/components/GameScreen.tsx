@@ -84,19 +84,19 @@ const GameScreen: React.FC<GameScreenProps> = ({ players, question, questionNumb
             <button
                 onClick={() => setIsAnswerVisible(true)}
                 disabled={isAnswerVisible || allAnswered}
-                className={`${btnBase} btn-base text-5xl font-black py-5 bg-gradient-to-br from-blue-400 to-blue-600 text-white focus:ring-blue-500 w-full mb-4`}
+                className={`${btnBase} btn-base text-3xl py-4 bg-gradient-to-br from-blue-400 to-blue-600 text-white focus:ring-blue-500 w-full mb-4`}
             >
                 答え
             </button>
             
-            <p id="answer-display" className={`text-3xl font-black mb-6 h-10 answer-text ${isAnswerVisible ? 'bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent' : ''}`}>
-                {isAnswerVisible ? question.japanese : ''}
+            <p id="answer-display" className={`text-2xl font-bold text-center mb-6 min-h-[2.5rem] flex items-center justify-center answer-text ${isAnswerVisible ? 'bg-gradient-to-r from-cyan-500 to-blue-500 bg-clip-text text-transparent' : 'text-transparent'}`}>
+                {isAnswerVisible ? `${question.english} / ${question.japanese}` : <>&nbsp;</>}
             </p>
 
             <button
                 onClick={playAudioHint}
                 disabled={allAnswered}
-                className={`${btnBase} btn-base text-5xl font-black py-5 bg-gradient-to-br from-purple-400 to-purple-600 text-white focus:ring-purple-500 w-full mb-6`}
+                className={`${btnBase} btn-base text-3xl py-4 bg-gradient-to-br from-purple-400 to-purple-600 text-white focus:ring-purple-500 w-full mb-6`}
             >
                 ヒント (発音)
             </button>

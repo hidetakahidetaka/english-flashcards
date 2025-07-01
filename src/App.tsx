@@ -1,3 +1,4 @@
+
 import React, { useState, useCallback } from 'react';
 import { type Screen, type Player, type VocabularyItem } from './types';
 import { VOCABULARY, MAX_QUESTIONS } from './constants';
@@ -54,13 +55,19 @@ const App: React.FC = () => {
     }, [currentQuestionIndex]);
 
     const handlePlayAgain = useCallback(() => {
-        setScreen('PlayerSelection');
-        setPlayers([]);
-        setPlayerCount(0);
+        setPlayers(prevPlayers => prevPlayers.map(p => ({ ...p, correct: 0, incorrect: 0 })));
+        const shuffled = [...VOCABULARY].sort(() => Math.random() - 0.5).slice(0, MAX_QUESTIONS);
+        setShuffledVocabulary(shuffled);
+        setCurrentQuestionIndex(0);
+        setScreen('Game');
     }, []);
 
     const handleBackToTitle = useCallback(() => {
         setScreen('PlayerSelection');
+        setPlayers([]);
+        setPlayerCount(0);
+        setCurrentQuestionIndex(0);
+        setShuffledVocabulary([]);
     }, []);
 
     const renderScreen = () => {
@@ -92,7 +99,7 @@ const App: React.FC = () => {
                     />
                 );
             case 'Result':
-                return <ResultScreen players={players} onPlayAgain={handlePlayAgain} />;
+                return <ResultScreen players={players} onPlayAgain={handlePlayAgain} onBackToTitle={handleBackToTitle} />;
             case 'VocabularyList':
                 return <VocabularyListScreen vocabulary={VOCABULARY} onBack={handleBackToTitle} />;
             default:
