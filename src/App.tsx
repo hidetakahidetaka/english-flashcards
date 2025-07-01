@@ -25,7 +25,7 @@ const App: React.FC = () => {
     }, []);
 
     const handleStartGame = useCallback((names: string[]) => {
-        const initialPlayers = names.map(name => ({ name, correct: 0, incorrect: 0 }));
+        const initialPlayers = names.map(name => ({ name, correct: 0, incorrect: 0, incorrectWords: [] }));
         setPlayers(initialPlayers);
 
         const shuffled = [...VOCABULARY].sort(() => Math.random() - 0.5).slice(0, MAX_QUESTIONS);
@@ -37,30 +37,60 @@ const App: React.FC = () => {
     const handleScoreUpdate = useCallback((playerIndex: number, isCorrect: boolean) => {
         setPlayers(prevPlayers => {
             const updatedPlayers = [...prevPlayers];
+            const playerToUpdate = { ...updatedPlayers[playerIndex] };
+            const currentQuestion = shuffledVocabulary[currentQuestionIndex];
+
             if (isCorrect) {
-                updatedPlayers[playerIndex].correct++;
+                playerToUpdate.correct++;
             } else {
-                updatedPlayers[playerIndex].incorrect++;
+                playerToUpdate.incorrect++;
+                if (!playerToUpdate.incorrectWords.some(item => item.english === currentQuestion.english)) {
+                    playerToUpdate.incorrectWords = [...playerToUpdate.incorrectWords, currentQuestion];
+                }
             }
+            updatedPlayers[playerIndex] = playerToUpdate;
             return updatedPlayers;
         });
-    }, []);
+    }, [currentQuestionIndex, shuffledVocabulary]);
 
     const handleQuestionAnswered = useCallback(() => {
-        if (currentQuestionIndex < MAX_QUESTIONS - 1) {
+        if (currentQuestionIndex < shuffledVocabulary.length - 1) {
             setCurrentQuestionIndex(prevIndex => prevIndex + 1);
         } else {
             setScreen('Result');
         }
-    }, [currentQuestionIndex]);
+    }, [currentQuestionIndex, shuffledVocabulary.length]);
 
     const handlePlayAgain = useCallback(() => {
-        setPlayers(prevPlayers => prevPlayers.map(p => ({ ...p, correct: 0, incorrect: 0 })));
+        setPlayers(prevPlayers => prevPlayers.map(p => ({ ...p, correct: 0, incorrect: 0, incorrectWords: [] })));
         const shuffled = [...VOCABULARY].sort(() => Math.random() - 0.5).slice(0, MAX_QUESTIONS);
         setShuffledVocabulary(shuffled);
         setCurrentQuestionIndex(0);
         setScreen('Game');
     }, []);
+
+    const handleStartReviewGame = useCallback(() => {
+        const allIncorrectWords = players.reduce((acc, player) => {
+            player.incorrectWords.forEach(word => {
+                if (!acc.has(word.english)) {
+                    acc.set(word.english, word);
+                }
+            });
+            return acc;
+        }, new Map<string, VocabularyItem>());
+
+        const reviewVocabulary = Array.from(allIncorrectWords.values());
+
+        if (reviewVocabulary.length === 0) {
+            alert("復習する問題がありません。");
+            return;
+        }
+
+        setPlayers(prevPlayers => prevPlayers.map(p => ({ ...p, correct: 0, incorrect: 0 })));
+        setShuffledVocabulary(reviewVocabulary.sort(() => Math.random() - 0.5));
+        setCurrentQuestionIndex(0);
+        setScreen('Game');
+    }, [players]);
 
     const handleBackToTitle = useCallback(() => {
         setScreen('PlayerSelection');
@@ -93,13 +123,18 @@ const App: React.FC = () => {
                         players={players}
                         question={shuffledVocabulary[currentQuestionIndex]}
                         questionNumber={currentQuestionIndex + 1}
-                        totalQuestions={MAX_QUESTIONS}
+                        totalQuestions={shuffledVocabulary.length}
                         onScoreUpdate={handleScoreUpdate}
                         onQuestionAnswered={handleQuestionAnswered}
                     />
                 );
             case 'Result':
-                return <ResultScreen players={players} onPlayAgain={handlePlayAgain} onBackToTitle={handleBackToTitle} />;
+                return <ResultScreen 
+                    players={players} 
+                    onPlayAgain={handlePlayAgain} 
+                    onBackToTitle={handleBackToTitle} 
+                    onStartReview={handleStartReviewGame} 
+                />;
             case 'VocabularyList':
                 return <VocabularyListScreen vocabulary={VOCABULARY} onBack={handleBackToTitle} />;
             default:

@@ -16,4 +16,5 @@ export interface Player {
   name: string;
   correct: number;
   incorrect: number;
+  incorrectWords: VocabularyItem[];
 }
