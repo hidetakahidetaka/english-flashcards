@@ -31,7 +31,7 @@ const ResultScreen: React.FC<ResultScreenProps> = ({ players, onPlayAgain, onBac
                         </p>
                         {player.incorrectWords.length > 0 && (
                             <div className="mt-3 text-left">
-                                <p className="text-md font-bold text-gray-700">間違えた単語:</p>
+                                <p className="text-md font-bold text-gray-700">このゲームで間違えた単語:</p>
                                 <ul className="list-disc list-inside text-gray-600 text-sm mt-1 space-y-1">
                                     {player.incorrectWords.map((word, i) => (
                                         <li key={i}><span className="font-semibold">{word.english}</span> ({word.japanese})</li>

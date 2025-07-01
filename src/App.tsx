@@ -8,8 +8,9 @@ import GameScreen from './components/GameScreen';
 import ResultScreen from './components/ResultScreen';
 import VocabularyListScreen from './components/VocabularyListScreen';
 import MistakeListScreen from './components/MistakeListScreen';
+import MistakeReviewSelectionScreen from './components/MistakeReviewSelectionScreen';
 
-const MISTAKE_LIST_STORAGE_KEY = 'englishFlashcardMistakes';
+const PLAYER_MISTAKES_STORAGE_KEY = 'englishFlashcardPlayerMistakes';
 
 const App: React.FC = () => {
     const [screen, setScreen] = useState<Screen>('PlayerSelection');
@@ -17,14 +18,15 @@ const App: React.FC = () => {
     const [players, setPlayers] = useState<Player[]>([]);
     const [shuffledVocabulary, setShuffledVocabulary] = useState<VocabularyItem[]>([]);
     const [currentQuestionIndex, setCurrentQuestionIndex] = useState<number>(0);
-    const [mistakeList, setMistakeList] = useState<VocabularyItem[]>([]);
+    const [playerMistakes, setPlayerMistakes] = useState<Record<string, VocabularyItem[]>>({});
     const [vocabularyForNextGame, setVocabularyForNextGame] = useState<VocabularyItem[] | null>(null);
+    const [viewingMistakeInfo, setViewingMistakeInfo] = useState<{ title: string; words: VocabularyItem[]; source: string | 'all' } | null>(null);
 
     useEffect(() => {
         try {
-            const storedMistakes = localStorage.getItem(MISTAKE_LIST_STORAGE_KEY);
+            const storedMistakes = localStorage.getItem(PLAYER_MISTAKES_STORAGE_KEY);
             if (storedMistakes) {
-                setMistakeList(JSON.parse(storedMistakes));
+                setPlayerMistakes(JSON.parse(storedMistakes));
             }
         } catch (error) {
             console.error("Failed to load mistakes from localStorage", error);
@@ -41,7 +43,7 @@ const App: React.FC = () => {
     }, []);
     
     const handleViewMistakeList = useCallback(() => {
-        setScreen('MistakeList');
+        setScreen('MistakeReviewSelection');
     }, []);
 
     const handleStartGame = useCallback((names: string[]) => {
@@ -73,12 +75,17 @@ const App: React.FC = () => {
                     playerToUpdate.incorrectWords = [...playerToUpdate.incorrectWords, currentQuestion];
                 }
 
-                // Add to persistent mistake list
-                setMistakeList(prevMistakes => {
-                    if (!prevMistakes.some(item => item.english === currentQuestion.english)) {
-                        const newMistakes = [...prevMistakes, currentQuestion];
+                // Add to persistent mistake list for the specific player
+                const playerName = playerToUpdate.name;
+                setPlayerMistakes(prevMistakes => {
+                    const playerSpecificMistakes = prevMistakes[playerName] || [];
+                    if (!playerSpecificMistakes.some(item => item.english === currentQuestion.english)) {
+                        const newMistakes = {
+                            ...prevMistakes,
+                            [playerName]: [...playerSpecificMistakes, currentQuestion]
+                        };
                         try {
-                            localStorage.setItem(MISTAKE_LIST_STORAGE_KEY, JSON.stringify(newMistakes));
+                            localStorage.setItem(PLAYER_MISTAKES_STORAGE_KEY, JSON.stringify(newMistakes));
                         } catch (error) {
                             console.error("Failed to save mistakes to localStorage", error);
                         }
@@ -119,38 +126,76 @@ const App: React.FC = () => {
         }, new Map<string, VocabularyItem>());
 
         const reviewVocabulary = Array.from(allIncorrectWords.values());
-
         if (reviewVocabulary.length === 0) {
             alert("復習する問題がありません。");
             return;
         }
-
         setPlayers(prevPlayers => prevPlayers.map(p => ({ ...p, correct: 0, incorrect: 0, incorrectWords: [] })));
         setShuffledVocabulary(reviewVocabulary.sort(() => Math.random() - 0.5));
         setCurrentQuestionIndex(0);
         setScreen('Game');
     }, [players]);
 
-    const handleStartGlobalReviewGame = useCallback(() => {
-        if (mistakeList.length === 0) {
-            alert("にがてリストに復習する問題がありません。");
-            return;
-        }
-        setVocabularyForNextGame(mistakeList);
-        setScreen('PlayerSelection');
-    }, [mistakeList]);
+    const handleSelectPlayerMistakes = useCallback((playerName: string) => {
+        const words = playerMistakes[playerName] || [];
+        setViewingMistakeInfo({
+            title: `${playerName}のにがてリスト`,
+            words: words,
+            source: playerName
+        });
+        setScreen('MistakeList');
+    }, [playerMistakes]);
+
+    const handleSelectAllMistakes = useCallback(() => {
+        const allWordsMap = new Map<string, VocabularyItem>();
+        Object.values(playerMistakes).flat().forEach(word => {
+            if (!allWordsMap.has(word.english)) {
+                allWordsMap.set(word.english, word);
+            }
+        });
+        const allWords = Array.from(allWordsMap.values());
+        setViewingMistakeInfo({
+            title: 'みんなのにがてリスト',
+            words: allWords,
+            source: 'all'
+        });
+        setScreen('MistakeList');
+    }, [playerMistakes]);
 
     const handleRemoveWordFromMistakeList = useCallback((wordToRemove: VocabularyItem) => {
-        setMistakeList(prevMistakes => {
-            const newMistakes = prevMistakes.filter(item => item.english !== wordToRemove.english);
-            try {
-                localStorage.setItem(MISTAKE_LIST_STORAGE_KEY, JSON.stringify(newMistakes));
-            } catch (error) {
-                console.error("Failed to save updated mistakes to localStorage", error);
+        if (!viewingMistakeInfo) return;
+
+        const { source } = viewingMistakeInfo;
+        const newPlayerMistakes = { ...playerMistakes };
+
+        if (source === 'all') {
+            Object.keys(newPlayerMistakes).forEach(playerName => {
+                newPlayerMistakes[playerName] = newPlayerMistakes[playerName].filter(w => w.english !== wordToRemove.english);
+            });
+        } else {
+            if (newPlayerMistakes[source]) {
+                newPlayerMistakes[source] = newPlayerMistakes[source].filter(w => w.english !== wordToRemove.english);
             }
-            return newMistakes;
-        });
-    }, []);
+        }
+        
+        try {
+            localStorage.setItem(PLAYER_MISTAKES_STORAGE_KEY, JSON.stringify(newPlayerMistakes));
+            setPlayerMistakes(newPlayerMistakes);
+            setViewingMistakeInfo(prev => prev ? { ...prev, words: prev.words.filter(w => w.english !== wordToRemove.english) } : null);
+        } catch (error) {
+            console.error("Failed to save updated mistakes to localStorage", error);
+        }
+    }, [viewingMistakeInfo, playerMistakes]);
+    
+    const handleStartGlobalReviewGame = useCallback(() => {
+        if (!viewingMistakeInfo || viewingMistakeInfo.words.length === 0) {
+            alert("復習する問題がありません。");
+            return;
+        }
+        setVocabularyForNextGame(viewingMistakeInfo.words);
+        setViewingMistakeInfo(null);
+        setScreen('PlayerSelection');
+    }, [viewingMistakeInfo]);
 
     const handleBackToTitle = useCallback(() => {
         setScreen('PlayerSelection');
@@ -159,6 +204,7 @@ const App: React.FC = () => {
         setCurrentQuestionIndex(0);
         setShuffledVocabulary([]);
         setVocabularyForNextGame(null);
+        setViewingMistakeInfo(null);
     }, []);
 
     const renderScreen = () => {
@@ -199,10 +245,19 @@ const App: React.FC = () => {
                 />;
             case 'VocabularyList':
                 return <VocabularyListScreen vocabulary={VOCABULARY} onBack={handleBackToTitle} />;
-            case 'MistakeList':
-                return <MistakeListScreen 
-                    mistakeList={mistakeList}
+            case 'MistakeReviewSelection':
+                 return <MistakeReviewSelectionScreen
+                    playerNamesWithMistakes={Object.keys(playerMistakes).filter(name => playerMistakes[name]?.length > 0)}
+                    onSelectPlayer={handleSelectPlayerMistakes}
+                    onSelectAll={handleSelectAllMistakes}
                     onBack={handleBackToTitle}
+                 />;
+            case 'MistakeList':
+                if (!viewingMistakeInfo) return null;
+                return <MistakeListScreen 
+                    title={viewingMistakeInfo.title}
+                    mistakeList={viewingMistakeInfo.words}
+                    onBack={() => setScreen('MistakeReviewSelection')}
                     onStartReview={handleStartGlobalReviewGame}
                     onRemoveWord={handleRemoveWordFromMistakeList}
                 />;

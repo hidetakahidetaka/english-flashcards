@@ -5,6 +5,7 @@ export type Screen =
   | 'Game'
   | 'Result'
   | 'VocabularyList'
+  | 'MistakeReviewSelection'
   | 'MistakeList';
 
 export interface VocabularyItem {

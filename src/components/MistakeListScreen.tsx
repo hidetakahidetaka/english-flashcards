@@ -2,13 +2,14 @@ import React from 'react';
 import type { VocabularyItem } from '../types';
 
 interface MistakeListScreenProps {
+    title: string;
     mistakeList: VocabularyItem[];
     onStartReview: () => void;
     onRemoveWord: (word: VocabularyItem) => void;
     onBack: () => void;
 }
 
-const MistakeListScreen: React.FC<MistakeListScreenProps> = ({ mistakeList, onStartReview, onRemoveWord, onBack }) => {
+const MistakeListScreen: React.FC<MistakeListScreenProps> = ({ title, mistakeList, onStartReview, onRemoveWord, onBack }) => {
     const titleClasses = "text-4xl sm:text-5xl font-extrabold text-blue-700 drop-shadow-md";
     const btnBaseClasses = "font-extrabold py-4 px-8 rounded-2xl shadow-lg transition-all duration-300 ease-in-out transform hover:scale-105 active:scale-95 focus:outline-none focus:ring-4 focus:ring-offset-2";
     const btnPrimaryClasses = "bg-gradient-to-br from-blue-400 to-blue-600 text-white focus:ring-blue-500";
@@ -17,12 +18,12 @@ const MistakeListScreen: React.FC<MistakeListScreenProps> = ({ mistakeList, onSt
 
     return (
         <div className="flex flex-col items-center justify-center text-center w-full p-4">
-            <h1 className={`${titleClasses} app-title mb-8`}>にがてリスト</h1>
+            <h1 className={`${titleClasses} app-title mb-8`}>{title}</h1>
             
             <div className="w-full h-80 bg-gray-50 border border-gray-200 rounded-xl p-2 mb-6 shadow-inner">
                 {mistakeList.length === 0 ? (
                     <div className="flex items-center justify-center h-full">
-                        <p className="text-gray-500 text-lg">まだ間違えた問題はありません。</p>
+                        <p className="text-gray-500 text-lg">にがてな問題はありません。</p>
                     </div>
                 ) : (
                     <div className="w-full overflow-y-auto max-h-full pr-2">
@@ -53,7 +54,7 @@ const MistakeListScreen: React.FC<MistakeListScreenProps> = ({ mistakeList, onSt
                     このリストで復習クイズを始める
                 </button>
                 <button onClick={onBack} className={`${btnBaseClasses} ${btnPrimaryClasses} btn-base w-full`}>
-                    タイトルに戻る
+                    選択画面に戻る
                 </button>
             </div>
         </div>
