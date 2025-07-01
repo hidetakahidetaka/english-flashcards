@@ -4,7 +4,8 @@ export type Screen =
   | 'NameInput'
   | 'Game'
   | 'Result'
-  | 'VocabularyList';
+  | 'VocabularyList'
+  | 'MistakeList';
 
 export interface VocabularyItem {
   english: string;
